@@ -31,7 +31,7 @@ export function WishlistGrid() {
 
   if (!mounted || products === null) {
     return (
-      <div role="status" aria-label="Loading wishlist" className="grid grid-cols-2 gap-3 md:grid-cols-3">
+      <div role="status" aria-label="Loading wishlist" className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4">
         {Array.from({ length: 3 }, (_, i) => <div key={i} className="aspect-3/4 animate-pulse rounded-xl bg-muted" />)}
       </div>
     );
@@ -49,7 +49,7 @@ export function WishlistGrid() {
   }
 
   return (
-    <ul className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:gap-4">
+    <ul className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4 lg:gap-4">
       {products.map((p) => <li key={p.id} className="min-w-0"><ProductCard product={p} /></li>)}
     </ul>
   );

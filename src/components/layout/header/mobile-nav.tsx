@@ -30,7 +30,7 @@ export function MobileNav() {
           {departments.map((d) => (
             <AccordionItem key={d.id} value={d.id}>
               <AccordionTrigger className="text-sm">{d.label}</AccordionTrigger>
-              <AccordionContent>
+              <AccordionContent className="[&_a]:no-underline">
                 <ul className="space-y-2 pl-1">
                   <li>
                     <Link href={d.href} onClick={close} className="text-sm font-medium">

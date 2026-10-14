@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageShell } from "@/components/content/page-shell";
-import { blogPosts } from "@/lib/content/blog";
+import { getBlogPosts } from "@/lib/cms/pages";
 
 export const metadata: Metadata = {
   title: "Blog",
@@ -11,7 +11,8 @@ export const metadata: Metadata = {
 
 const fmt = new Intl.DateTimeFormat("en-US", { dateStyle: "long", timeZone: "UTC" });
 
-export default function BlogPage() {
+export default async function BlogPage() {
+  const blogPosts = await getBlogPosts();
   return (
     <PageShell title="Blog" intro="Buying guides and tips to help you choose well." width="wide">
       <ul className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">

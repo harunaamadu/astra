@@ -3,17 +3,17 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ContentSections } from "@/components/content/content-sections";
 import { PageShell } from "@/components/content/page-shell";
-import { blogPosts, getBlogPost } from "@/lib/content/blog";
+import { getBlogPost, getBlogPosts } from "@/lib/cms/pages";
 
 type Props = { params: Promise<{ slug: string }> };
 
-export function generateStaticParams() {
-  return blogPosts.map((p) => ({ slug: p.slug }));
+export async function generateStaticParams() {
+  return (await getBlogPosts()).map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const p = getBlogPost(slug);
+  const p = await getBlogPost(slug);
   return p
     ? { title: p.title, description: p.excerpt, alternates: { canonical: `/blog/${slug}` }, openGraph: { type: "article", title: p.title, description: p.excerpt, publishedTime: p.date } }
     : { title: "Post not found" };
@@ -31,7 +31,7 @@ export default function BlogPostPage({ params }: Props) {
 
 async function BlogPostContent({ params }: Props) {
   const { slug } = await params;
-  const post = getBlogPost(slug);
+  const post = await getBlogPost(slug);
   if (!post) notFound();
   return (
     <PageShell

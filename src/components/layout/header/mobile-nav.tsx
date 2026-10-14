@@ -5,11 +5,13 @@ import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { departments, subNavLinks, utilityLinks } from "@/lib/constants/navigation";
+import { subNavLinks, utilityLinks } from "@/lib/constants/navigation";
+import { useDepartments } from "@/components/providers/departments-provider";
 import { useUIStore } from "@/store/ui-store";
 import { Logo } from "./logo";
 
 export function MobileNav() {
+  const departments = useDepartments();
   const open = useUIStore((s) => s.mobileNavOpen);
   const setOpen = useUIStore((s) => s.setMobileNavOpen);
   const close = () => setOpen(false);

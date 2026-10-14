@@ -3,6 +3,8 @@ import { Header } from "@/components/layout/header/header";
 import { MobileBottomNav } from "@/components/layout/header/mobile-bottom-nav";
 import { CartDrawer } from "@/components/cart/cart-drawer";
 import { CartSync } from "@/components/cart/cart-sync";
+import { DepartmentsProvider } from "@/components/providers/departments-provider";
+import { getDepartments } from "@/lib/cms/departments";
 
 /**
  * Storefront chrome: header, main landmark, and (from step 2) footer.
@@ -13,13 +15,14 @@ import { CartSync } from "@/components/cart/cart-sync";
  *  - <Footer />      step 2
  *  - <CartDrawer />  step 4 (opened by the header's CartButton via the UI store)
  */
-export default function ShopLayout({
+export default async function ShopLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const departments = await getDepartments();
   return (
-    <>
+    <DepartmentsProvider departments={departments}>
       <Header />
       <main id="main" className="min-h-[60vh]">
         {children}
@@ -29,6 +32,6 @@ export default function ShopLayout({
 
       <CartDrawer />
       <CartSync />
-    </>
+    </DepartmentsProvider>
   );
 }

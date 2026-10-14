@@ -1,6 +1,6 @@
 import type { InfoPage } from "@/types/content";
 
-/** SAMPLE COPY. Replace with real company information (or Sanity documents in step 5). */
+/** SAMPLE COPY: static fallback and seed source. Pages read through src/lib/cms/pages.ts (Sanity first). Replace with real company information in Sanity. */
 export const infoPages: InfoPage[] = [
   {
     slug: "about", title: "About Astra", description: "What Astra is and how the marketplace works.",
@@ -88,4 +88,3 @@ export const infoPages: InfoPage[] = [
   },
 ];
 
-export const getInfoPage = (slug: string) => infoPages.find((p) => p.slug === slug) ?? null;

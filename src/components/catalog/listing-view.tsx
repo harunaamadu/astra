@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { ProductBreadcrumbs } from "@/components/product/detail/product-breadcrumbs";
 import { SponsoredStrip } from "@/components/home/sponsored-strip";
-import { getSponsoredShortcuts } from "@/lib/data/home";
+import { getSponsoredShortcuts } from "@/lib/cms/home";
 import { countActiveFilters } from "@/lib/catalog/query";
 import type { NavLink } from "@/types";
 import type { CategoryListing, FilterQuery } from "@/types/catalog";

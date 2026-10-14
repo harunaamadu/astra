@@ -1,8 +1,8 @@
 import type { Department, NavLink } from "@/types";
 
 /**
- * Temporary static data. In step 5 this moves to Sanity (category documents)
- * and is fetched with GROQ + cached via Next.js tags.
+ * Static fallback and seed source for the category tree. The live tree is the Sanity "department"
+ * documents, read through getDepartments() in src/lib/cms/departments.ts.
  */
 export const departments: Department[] = [
   {

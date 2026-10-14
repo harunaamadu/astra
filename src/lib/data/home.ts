@@ -7,8 +7,9 @@ import type {
 } from "@/types";
 
 /**
- * SAMPLE DATA. Every function is async so call sites don't change when these
- * move to Sanity (editorial) and Prisma (price, stock) in steps 5-6.
+ * SAMPLE DATA. Editorial lists (hero, tiles, shortcuts, banners) are now read from Sanity through
+ * src/lib/cms/home.ts, with these as the fallback and seed source. Products (price, stock) stay here
+ * until Prisma replaces them in step 6.
  * Prices are cents. Drop real images into public/images and set `image`.
  */
 

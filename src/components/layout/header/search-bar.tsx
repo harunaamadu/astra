@@ -5,12 +5,14 @@ import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { departments, popularSearches } from "@/lib/constants/navigation";
+import { popularSearches } from "@/lib/constants/navigation";
+import { useDepartments } from "@/components/providers/departments-provider";
 import { searchSchema } from "@/lib/validations/search";
 import { useDebounce } from "@/hooks/use-debounce";
 
 export function SearchBar() {
   const router = useRouter();
+  const departments = useDepartments();
   const inputRef = useRef<HTMLInputElement>(null);
   const [q, setQ] = useState("");
   const [category, setCategory] = useState("all");

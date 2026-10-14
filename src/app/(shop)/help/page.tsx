@@ -3,7 +3,7 @@ import Link from "next/link";
 import { LifeBuoy, Mail } from "lucide-react";
 import { FaqAccordion } from "@/components/content/faq-accordion";
 import { PageShell } from "@/components/content/page-shell";
-import { helpArticles, helpFaq } from "@/lib/content/help";
+import { getHelpArticles, getHelpFaq } from "@/lib/cms/pages";
 
 export const metadata: Metadata = {
   title: "Help center",
@@ -11,7 +11,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/help" },
 };
 
-export default function HelpPage() {
+export default async function HelpPage() {
+  const [helpArticles, helpFaq] = await Promise.all([getHelpArticles(), getHelpFaq()]);
   return (
     <PageShell title="Help center" intro="Find answers about orders, delivery, returns and payments." width="wide">
       <div className="space-y-14">

@@ -1,19 +1,17 @@
-import { FREE_SHIPPING_THRESHOLD, shippingMethods } from "@/lib/cart/pricing";
-import { PLUS_RETURN_WINDOW_DAYS, RETURN_WINDOW_DAYS } from "@/lib/constants/policies";
-import { formatPrice } from "@/lib/utils";
 import type { HelpArticle } from "@/types/content";
 
-const std = shippingMethods.standard;
-const exp = shippingMethods.express;
-
-/** Numbers come from the same constants the cart and checkout use, so the help text can never drift. */
+/**
+ * Static fallback and seed source. Numbers are {{tokens}} filled at read time from the constants the
+ * cart and checkout use (see src/lib/cms/tokens.ts), so help text can never drift from real prices.
+ * Pages read through src/lib/cms/pages.ts, not from here.
+ */
 export const helpArticles: HelpArticle[] = [
   {
     slug: "shipping", title: "Shipping rates and policies", summary: "Delivery options, costs and timing.",
     sections: [
       { heading: "Delivery options", items: [
-        { title: `${std.label}: ${std.description}`, text: `${formatPrice(std.price)}, or free on orders of ${formatPrice(FREE_SHIPPING_THRESHOLD)} or more.` },
-        { title: `${exp.label}: ${exp.description}`, text: `${formatPrice(exp.price)}. Express is not discounted by free-delivery offers.` },
+        { title: "{{standardShippingLabel}}: {{standardShippingDescription}}", text: "{{standardShippingPrice}}, or free on orders of {{freeShippingThreshold}} or more." },
+        { title: "{{expressShippingLabel}}: {{expressShippingDescription}}", text: "{{expressShippingPrice}}. Express is not discounted by free-delivery offers." },
       ] },
       { heading: "Tracking", paragraphs: ["Once your order ships you can follow it from Your orders in your account."] },
       { heading: "Delivery times", paragraphs: ["Times start when your order ships, not when you place it. Some items from marketplace sellers may ship separately."] },
@@ -22,7 +20,7 @@ export const helpArticles: HelpArticle[] = [
   {
     slug: "returns", title: "Returns and replacements", summary: "How to return an item or get a replacement.",
     sections: [
-      { heading: "Return window", paragraphs: [`Most items can be returned within ${RETURN_WINDOW_DAYS} days of delivery. Astra Plus members get ${PLUS_RETURN_WINDOW_DAYS} days.`] },
+      { heading: "Return window", paragraphs: ["Most items can be returned within {{returnWindowDays}} days of delivery. Astra Plus members get {{plusReturnWindowDays}} days."] },
       { heading: "How to return", items: [
         { title: "1. Open your order", text: "Go to Your orders and choose the order." },
         { title: "2. Pick the item", text: "Select the item and tell us why you are returning it." },
@@ -54,11 +52,10 @@ export const helpArticles: HelpArticle[] = [
   },
 ];
 
-export const getHelpArticle = (slug: string) => helpArticles.find((a) => a.slug === slug) ?? null;
 
 export const helpFaq = [
   { question: "Where is my order?", answer: "Open Your orders in your account. Each order shows its current status." },
-  { question: "How do I return something?", answer: `Start from the order page. Most items can be returned within ${RETURN_WINDOW_DAYS} days.` },
+  { question: "How do I return something?", answer: "Start from the order page. Most items can be returned within {{returnWindowDays}} days." },
   { question: "How do I change my delivery address?", answer: "Addresses can be changed until an order ships. After that, contact support." },
   { question: "How do I use a promo code?", answer: "Enter it in the Promo code field in your cart or at checkout." },
 ];

@@ -43,4 +43,3 @@ export const legalDocs: LegalDoc[] = [
   },
 ];
 
-export const getLegalDoc = (slug: string) => legalDocs.find((d) => d.slug === slug) ?? null;

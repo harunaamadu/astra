@@ -277,8 +277,28 @@ astra/
 2. Homepage: hero carousel, personal-offers strip, category grid, banners, product rails, newsletter, footer
 3. Catalog: category/search pages with faceted filters, sort, pagination
 4. Product page, cart drawer, cart page, checkout UI
-5. Sanity: schemas, studio, GROQ queries, replace static data
+5. Sanity: schemas, studio, GROQ queries, replace static data (done, see "Content layer" below)
 6. Prisma: schema, migrations, seed
 7. Auth (Auth.js), orders, payments adapter, webhooks
 8. Seller dashboard, sponsored listings, Astra Plus
 9. SEO, performance, tests, deployment
+
+## Content layer (Sanity, step 5)
+
+Editors manage content at `/studio`. The storefront reads it through `src/lib/cms/*`, which runs a cached GROQ query (`src/lib/sanity/queries.ts`) and falls back to the static sample content when Sanity is not configured, unreachable, or empty. Nothing outside `src/lib/cms` imports Sanity.
+
+| Sanity document | Replaces | Read by |
+|---|---|---|
+| `department` | `lib/constants/navigation.ts` (category tree) | `cms/departments.ts`; header menus via `DepartmentsProvider`, `/c` pages, sitemap |
+| `homePage` (singleton) | hero, category tiles, offers, banners, sponsored strip in `lib/data/home.ts` | `cms/home.ts` |
+| `blogPost`, `infoPage`, `helpArticle`, `helpCenter`, `legalDoc` | `lib/content/*` | `cms/pages.ts` |
+| `productContent` | description, highlights, specs, FAQ, gallery for one product slug | `cms/products.ts` (`getProductDetail`, product page only) |
+
+Stays in code until Prisma (step 6): price, compare-at price, stock, variants, reviews, seller, shipping rates, plans, promo codes. A hero slide references a product by slug and takes its price from the catalog. Checkout and the cart call `getProductBySlug`, which never touches Sanity.
+
+Numbers inside editorial text are tokens such as `{{returnWindowDays}}` or `{{standardShippingPrice}}`, filled at read time from the constants the cart uses (`cms/tokens.ts`), so help and legal copy cannot disagree with real charges.
+
+Caching: every query is a `use cache` function tagged `sanity:<family>` (`cacheLife("hours")`). A Sanity webhook calls `POST /api/revalidate`, which verifies the signature and calls `revalidateTag(tag, "max")` for the changed document type.
+
+Setup: create a project, copy `.env.example` to `.env.local`, then `npm run sanity:seed` (use `-- --dry` first) to load the current sample content. Add a webhook for `/api/revalidate` (POST, projection `{_type}`) using `SANITY_REVALIDATE_SECRET`, and add the site URL as a CORS origin so `/studio` can sign in.
+

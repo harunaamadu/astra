@@ -11,8 +11,9 @@ import { getCatalogProducts } from "./home";
 import { getAllCatalogProducts } from "./catalog";
 
 /**
- * SAMPLE DATA. Replace with Sanity (descriptions, media, FAQ) + Prisma (price, stock,
- * variants, reviews) in steps 5-6. The exported async functions keep their signatures.
+ * SAMPLE DATA. Marketing copy and images are overlaid from Sanity by getProductDetail() in
+ * src/lib/cms/products.ts. Price, stock, variants and reviews stay here until Prisma (step 6);
+ * checkout and the cart call getProductBySlug directly so money never depends on the CMS.
  */
 
 const trails: Record<string, NavLink[]> = {

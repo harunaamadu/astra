@@ -14,8 +14,8 @@ type Props = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-export function generateStaticParams() {
-  return getAllCategoryPaths().map((path) => ({ slug: path.split("/") }));
+export async function generateStaticParams() {
+  return (await getAllCategoryPaths()).map((path) => ({ slug: path.split("/") }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!path)
     return { title: "All departments", alternates: { canonical: "/c" } };
 
-  const category = getCategory(path);
+  const category = await getCategory(path);
   if (!category) return { title: "Category not found" };
   return {
     title: category.label,
@@ -48,7 +48,7 @@ async function CategoryContent({ params, searchParams }: Props) {
   const path = slug.join("/");
   if (!path) return <DepartmentsIndex />;
 
-  const category = getCategory(path);
+  const category = await getCategory(path);
   if (!category) notFound();
 
   const query = parseCategoryQuery(await searchParams);

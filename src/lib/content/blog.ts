@@ -1,6 +1,6 @@
 import type { BlogPost } from "@/types/content";
 
-/** SAMPLE POSTS. Move to Sanity (portable text) in step 5. */
+/** SAMPLE POSTS: static fallback and seed source. Pages read through src/lib/cms/pages.ts (Sanity first). */
 export const blogPosts: BlogPost[] = [
   {
     slug: "how-to-choose-a-monitor", title: "How to choose a monitor", date: "2026-09-15",
@@ -31,4 +31,3 @@ export const blogPosts: BlogPost[] = [
   },
 ];
 
-export const getBlogPost = (slug: string) => blogPosts.find((p) => p.slug === slug) ?? null;

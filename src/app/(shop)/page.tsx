@@ -8,10 +8,10 @@ import { SponsoredStrip } from "@/components/home/sponsored-strip";
 import { SellerCta } from "@/components/home/seller-cta";
 import { NewsletterSection } from "@/components/home/newsletter-section";
 import { ProductRail } from "@/components/product/product-rail";
+import { getBestSellers, getPicksForYou } from "@/lib/data/home";
 import {
-  getBestSellers, getCategories, getHeroSlides, getPersonalOffers,
-  getPicksForYou, getPromoBanners, getSponsoredShortcuts,
-} from "@/lib/data/home";
+  getCategories, getHeroSlides, getPersonalOffers, getPromoBanners, getSponsoredShortcuts,
+} from "@/lib/cms/home";
 
 export const metadata: Metadata = {
   title: { absolute: "Astra: everyday essentials and standout finds" },

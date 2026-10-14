@@ -1,5 +1,5 @@
-import { departments } from "@/lib/constants/navigation";
-import { getCategory } from "@/lib/catalog/categories";
+import { getDepartments } from "@/lib/cms/departments";
+import { getCategoryLabels } from "@/lib/catalog/categories";
 import {
   applyFilters,
   computeFacets,
@@ -26,10 +26,10 @@ export type CollectionSource =
 const discount = (p: CatalogProduct) =>
   p.compareAtPrice ? 1 - p.price / p.compareAtPrice : 0;
 
-function searchScore(p: CatalogProduct, tokens: string[]): number {
+function searchScore(p: CatalogProduct, tokens: string[], labels: Map<string, string>): number {
   const title = p.title.toLowerCase();
   const brand = (p.brand ?? "").toLowerCase();
-  const category = (getCategory(p.categoryPath)?.label ?? "").toLowerCase();
+  const category = (labels.get(p.categoryPath) ?? "").toLowerCase();
   let score = 0;
   for (const t of tokens) {
     const s =
@@ -57,9 +57,10 @@ export async function getCollectionListing(
         .split(/\s+/)
         .filter(Boolean)
         .slice(0, 8);
+      const [departments, labels] = await Promise.all([getDepartments(), getCategoryLabels()]);
       const dept = departments.find((d) => d.id === source.department);
       const prefix = dept?.href.replace("/c/", "");
-      const scores = new Map(all.map((p) => [p.id, searchScore(p, tokens)]));
+      const scores = new Map(all.map((p) => [p.id, searchScore(p, tokens, labels)]));
       pool = all.filter(
         (p) =>
           (scores.get(p.id) ?? 0) > 0 &&

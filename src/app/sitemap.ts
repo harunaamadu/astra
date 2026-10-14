@@ -1,9 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getAllCategoryPaths } from "@/lib/catalog/categories";
-import { blogPosts } from "@/lib/content/blog";
-import { helpArticles } from "@/lib/content/help";
-import { infoPages } from "@/lib/content/info";
-import { legalDocs } from "@/lib/content/legal";
+import { getBlogPosts, getHelpArticles, getInfoPages, getLegalDocs } from "@/lib/cms/pages";
 import { sellers } from "@/lib/data/catalog";
 import { getAllProductSlugs } from "@/lib/data/products";
 
@@ -26,11 +23,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/help",
     "/blog",
   ];
-  const slugs = await getAllProductSlugs();
+  const [slugs, categoryPaths, infoPages, helpArticles, legalDocs, blogPosts] = await Promise.all([
+    getAllProductSlugs(),
+    getAllCategoryPaths(),
+    getInfoPages(),
+    getHelpArticles(),
+    getLegalDocs(),
+    getBlogPosts(),
+  ]);
 
   return [
     ...fixed.map((p) => ({ url: url(p), priority: p === "/" ? 1 : 0.7 })),
-    ...getAllCategoryPaths().map((p) => ({
+    ...categoryPaths.map((p) => ({
       url: url(`/c/${p}`),
       priority: 0.8,
     })),

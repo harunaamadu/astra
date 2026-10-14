@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { departments } from "@/lib/constants/navigation";
+import { getDepartments } from "@/lib/cms/departments";
 
 /** Shown at /c. Every department with its subcategories. */
-export function DepartmentsIndex() {
+export async function DepartmentsIndex() {
+  const departments = await getDepartments();
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 md:py-10">
       <h1 className="text-2xl font-semibold md:text-3xl">All departments</h1>

@@ -27,23 +27,27 @@ export type CartItem = {
   gift?: boolean;
 };
 
-export type IconKey =
-  | "headphones"
-  | "laptop"
-  | "home"
-  | "shirt"
-  | "gamepad"
-  | "sparkles"
-  | "monitor"
-  | "footprints"
-  | "cooking-pot"
-  | "plug"
-  | "wind"
-  | "gift"
-  | "truck"
-  | "package"
-  | "clock"
-  | "speaker";
+/** Single source for icon names: the Sanity studio offers exactly these in its icon dropdowns. */
+export const ICON_KEYS = [
+  "headphones",
+  "laptop",
+  "home",
+  "shirt",
+  "gamepad",
+  "sparkles",
+  "monitor",
+  "footprints",
+  "cooking-pot",
+  "plug",
+  "wind",
+  "gift",
+  "truck",
+  "package",
+  "clock",
+  "speaker",
+] as const;
+
+export type IconKey = (typeof ICON_KEYS)[number];
 
 export type PaymentKey = "Visa" | "Mastercard" | "Mobile Money" | "PayPal";
 

@@ -3,17 +3,17 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ContentSections } from "@/components/content/content-sections";
 import { PageShell } from "@/components/content/page-shell";
-import { getHelpArticle, helpArticles } from "@/lib/content/help";
+import { getHelpArticle, getHelpArticles } from "@/lib/cms/pages";
 
 type Props = { params: Promise<{ topic: string }> };
 
-export function generateStaticParams() {
-  return helpArticles.map((a) => ({ topic: a.slug }));
+export async function generateStaticParams() {
+  return (await getHelpArticles()).map((a) => ({ topic: a.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { topic } = await params;
-  const a = getHelpArticle(topic);
+  const a = await getHelpArticle(topic);
   return a ? { title: a.title, description: a.summary, alternates: { canonical: `/help/${topic}` } } : { title: "Help topic not found" };
 }
 
@@ -27,7 +27,7 @@ export default function HelpTopicPage({ params }: Props) {
 
 async function HelpTopicContent({ params }: Props) {
   const { topic } = await params;
-  const article = getHelpArticle(topic);
+  const article = await getHelpArticle(topic);
   if (!article) notFound();
   return (
     <PageShell title={article.title} intro={article.summary} trail={[{ label: "Help center", href: "/help" }]}>

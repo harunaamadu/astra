@@ -7,7 +7,8 @@ import { ProductTabs } from "@/components/product/detail/product-tabs";
 import { ProductJsonLd } from "@/components/product/detail/product-json-ld";
 import { ProductPageSkeleton } from "@/components/product/detail/product-page-skeleton";
 import { ProductRail } from "@/components/product/product-rail";
-import { getAllProductSlugs, getProductBySlug, getRelatedProducts } from "@/lib/data/products";
+import { getProductDetail } from "@/lib/cms/products";
+import { getAllProductSlugs, getRelatedProducts } from "@/lib/data/products";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -18,7 +19,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const product = await getProductBySlug(slug);
+  const product = await getProductDetail(slug);
   if (!product) return { title: "Product not found" };
 
   const description = product.description.slice(0, 155);
@@ -49,7 +50,7 @@ export default function ProductPage({ params }: Props) {
 
 async function ProductContent({ params }: Props) {
   const { slug } = await params;
-  const product = await getProductBySlug(slug);
+  const product = await getProductDetail(slug);
   if (!product) notFound();
 
   const related = await getRelatedProducts(product);

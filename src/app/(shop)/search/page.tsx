@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { ListingView } from "@/components/catalog/listing-view";
 import { SearchEmpty } from "@/components/catalog/search-empty";
 import { CategorySkeleton } from "@/components/catalog/category-skeleton";
-import { departments } from "@/lib/constants/navigation";
+import { getDepartments } from "@/lib/cms/departments";
 import { parseCategoryQuery } from "@/lib/catalog/query";
 import { getCollectionListing } from "@/lib/data/collections";
 
@@ -25,6 +25,7 @@ export default function SearchPage({ searchParams }: Props) {
 async function SearchContent({ searchParams }: Props) {
   const sp = await searchParams;
   const q = (first(sp.q) ?? "").trim().slice(0, 120);
+  const departments = await getDepartments();
   const department = departments.find((d) => d.id === first(sp.category));
 
   if (!q) {

@@ -4,17 +4,17 @@ import { notFound } from "next/navigation";
 import { ContentSections } from "@/components/content/content-sections";
 import { CookiePreferences } from "@/components/content/cookie-preferences";
 import { PageShell } from "@/components/content/page-shell";
-import { getLegalDoc, legalDocs } from "@/lib/content/legal";
+import { getLegalDoc, getLegalDocs } from "@/lib/cms/pages";
 
 type Props = { params: Promise<{ doc: string }> };
 
-export function generateStaticParams() {
-  return legalDocs.map((d) => ({ doc: d.slug }));
+export async function generateStaticParams() {
+  return (await getLegalDocs()).map((d) => ({ doc: d.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { doc } = await params;
-  const d = getLegalDoc(doc);
+  const d = await getLegalDoc(doc);
   return d ? { title: d.title, description: d.summary, alternates: { canonical: `/legal/${doc}` } } : { title: "Document not found" };
 }
 
@@ -30,7 +30,7 @@ export default function LegalPage({ params }: Props) {
 
 async function LegalContent({ params }: Props) {
   const { doc } = await params;
-  const d = getLegalDoc(doc);
+  const d = await getLegalDoc(doc);
   if (!d) notFound();
   return (
     <PageShell

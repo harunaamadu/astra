@@ -17,7 +17,7 @@ export const bannerToneOptions = [
 
 /** Internal path ("/deals") or https URL. Anything else, such as javascript: links, is rejected. */
 export const hrefValidation = (rule: { required: () => any; custom: (fn: (v: unknown) => true | string) => any }) =>
-  rule.required().custom((v: string) => // NB: added string
+  rule.required().custom((v: unknown) =>
     typeof v === "string" && ((v.startsWith("/") && !v.startsWith("//")) || /^https:\/\//.test(v))
       ? true
       : "Use a path starting with / or a full https:// URL",

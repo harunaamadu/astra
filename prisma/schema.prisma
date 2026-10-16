@@ -1,0 +1,283 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ───────────────────────────── enums ─────────────────────────────
+
+enum Role {
+  CUSTOMER
+  SELLER
+  ADMIN
+}
+
+enum SellerStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+}
+
+enum ProductStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
+enum ProductBadge {
+  BEST_SELLER
+  NEW
+}
+
+enum OrderStatus {
+  PENDING_PAYMENT
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum ShippingMethod {
+  STANDARD
+  EXPRESS
+}
+
+enum PaymentMethod {
+  CARD
+  MOBILE_MONEY
+  PAYPAL
+}
+
+enum PromoType {
+  PERCENT
+  FIXED
+  FREE_SHIPPING
+}
+
+// ───────────────────────────── people ─────────────────────────────
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  phone        String?
+  /// Argon2/bcrypt hash. Null for users who sign in with a provider (step 7).
+  passwordHash String?
+  role         Role     @default(CUSTOMER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  orders  Order[]
+  reviews Review[]
+}
+
+model Seller {
+  /// Stable slug-like id, for example "astra". It appears in URLs (/s/astra).
+  id               String       @id
+  name             String
+  rating           Float        @default(0)
+  fulfilledByAstra Boolean      @default(false)
+  status           SellerStatus @default(ACTIVE)
+  createdAt        DateTime     @default(now())
+
+  products Product[]
+}
+
+// ───────────────────────────── catalog ─────────────────────────────
+// Money is always an Int in minor units (cents).
+
+model Product {
+  id   String @id @default(cuid())
+  slug String @unique
+
+  title     String
+  brand     String?
+  /// Lower-case slug of the brand, used by the Brand filter.
+  brandSlug String?
+
+  /// The Sanity category document _id (stable even if an editor renames the slug).
+  categoryId String
+  sellerId   String
+  seller     Seller @relation(fields: [sellerId], references: [id])
+
+  status ProductStatus @default(ACTIVE)
+  /// false hides the product from listings and search (gift cards).
+  listed Boolean       @default(true)
+
+  price           Int
+  compareAtPrice  Int?
+  /// Denormalised from price and compareAtPrice so "deals" can filter and sort in SQL.
+  discountPercent Int     @default(0)
+  currency        String  @default("USD")
+
+  /// Denormalised from Review rows. Recomputed whenever reviews change.
+  rating          Float @default(0)
+  reviewCount     Int   @default(0)
+  /// { "1": 2, "2": 3, ... } percentage per star.
+  ratingBreakdown Json?
+
+  badge     ProductBadge?
+  /// Paid placement. Always labelled "Sponsored" in the UI. Becomes its own table in step 8.
+  sponsored Boolean       @default(false)
+
+  color    String?
+  imageUrl String?
+  /// Placeholder icon key until real photos exist.
+  icon     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  variants   Variant[]
+  attributes ProductAttribute[]
+  reviews    Review[]
+  orderItems OrderItem[]
+
+  @@index([categoryId, status, listed])
+  @@index([sellerId])
+  @@index([price])
+  @@index([discountPercent])
+  @@index([createdAt])
+  @@index([brandSlug])
+}
+
+model Variant {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  /// Human-stable key used by carts and URLs, for example "black" or "us-9". Unique per product.
+  key      String
+  label    String
+  /// CSS colour; when set the variant renders as a swatch.
+  swatch   String?
+  sku      String  @unique
+  stock    Int     @default(0)
+  /// Overrides the product price (gift card amounts, size-based pricing).
+  price    Int?
+  position Int     @default(0)
+
+  @@unique([productId, key])
+  @@index([productId])
+}
+
+/// Filterable attributes (Display size, Refresh rate ...) as rows, so filters and counts are plain SQL.
+model ProductAttribute {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  key       String
+  keySlug   String
+  value     String
+  valueSlug String
+
+  @@unique([productId, keySlug])
+  @@index([keySlug, valueSlug])
+}
+
+model Review {
+  id         String  @id @default(cuid())
+  productId  String
+  product    Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId     String?
+  user       User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  authorName String
+  /// 1 to 5. Validated in the application layer.
+  rating     Int
+  title      String
+  body       String
+  verified   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@unique([productId, userId])
+  @@index([productId, createdAt])
+}
+
+// ───────────────────────────── commerce ─────────────────────────────
+
+model Order {
+  /// Public order number, for example AST-4F8A21C9.
+  id     String      @id
+  userId String?
+  user   User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  email  String
+  status OrderStatus @default(PENDING_PAYMENT)
+
+  shippingMethod   ShippingMethod
+  paymentMethod    PaymentMethod
+  paymentProvider  String?
+  /// The provider's reference. Unique, so a webhook retry can never mark two orders paid.
+  paymentReference String?        @unique
+  promoCode        String?
+  currency         String         @default("USD")
+
+  subtotal Int
+  discount Int
+  shipping Int
+  total    Int
+
+  /// Snapshot of the address at purchase time (shape: addressSchema in lib/validations/checkout.ts).
+  shippingAddress Json
+  paidAt          DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  items OrderItem[]
+
+  @@index([userId, createdAt])
+  @@index([status])
+}
+
+/// A snapshot of what was bought. Title and price are copied so later catalog edits never change history.
+model OrderItem {
+  id      String @id @default(cuid())
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  productId  String?
+  product    Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  variantKey String?
+  sellerId   String
+
+  slug         String
+  title        String
+  variantLabel String?
+  image        String?
+  icon         String?
+  price        Int
+  quantity     Int
+  gift         Boolean @default(false)
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+model PromoCode {
+  code           String    @id
+  type           PromoType
+  /// Percent (10 = 10%) or cents for FIXED. Unused for FREE_SHIPPING.
+  value          Int       @default(0)
+  minSubtotal    Int?
+  label          String
+  startsAt       DateTime?
+  endsAt         DateTime?
+  maxRedemptions Int?
+  redemptions    Int       @default(0)
+  active         Boolean   @default(true)
+}
+
+model NewsletterSubscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}

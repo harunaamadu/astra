@@ -1,5 +1,5 @@
 import { createClient } from "@sanity/client";
-import { apiVersion, dataset, isSanityConfigured, projectId } from "../../../sanity/env";
+import { apiVersion, dataset, isSanityConfigured, projectId } from "../../sanity/env";
 
 /**
  * Read-only client for published content. `useCdn` is off because Next caches the results

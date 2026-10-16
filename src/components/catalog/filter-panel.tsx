@@ -120,8 +120,10 @@ function PriceFacet({ bounds, value, onChange, idPrefix }: { bounds: PriceBounds
         max={bounds.max}
         step={1}
         value={[lo, hi]}
-        onValueChange={([a, b]) => { setLo(a); setHi(b); }}
-        onValueCommit={([a, b]) => commit(a, b)}
+        // onValueChange={([a, b]) => { setLo(a); setHi(b); }}
+        onValueChange={([a, b]: number[]) => { setLo(a); setHi(b); }}
+        // onValueCommit={([a, b]) => commit(a, b)}
+        onValueCommit={([a, b]: number[]) => commit(a, b)}
         aria-label="Price range"
         className="px-1"
       />

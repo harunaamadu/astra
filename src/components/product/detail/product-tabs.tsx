@@ -14,7 +14,7 @@ export function ProductTabs({ product }: { product: ProductDetail }) {
     >
       <Tabs defaultValue="info">
         <div className="overflow-x-auto scrollbar-none">
-          <TabsList className="h-auto w-max justify-start gap-1 bg-transparent p-0" variant="line">
+          <TabsList className="h-auto w-max justify-start gap-1 bg-transparent p-0">
             {[
               ["info", "Product information"],
               [
@@ -26,7 +26,7 @@ export function ProductTabs({ product }: { product: ProductDetail }) {
               <TabsTrigger
                 key={value}
                 value={value}
-                className="rounded-none border-b-2 border-transparent px-4 py-2.5 data-[state=active]:border-b-primary data-[state=active]:bg-primary/15! data-[state=active]:shadow-none data-[state=active]:text-primary-foreground data-[state=active]:font-semibold"
+                className="rounded-none bg-transparent border-b border-transparent px-4 py-2.5 data-[state=active]:border-b-primary data-[state=active]:bg-primary/15! data-[state=active]:shadow-none data-[state=active]:text-primary-foreground data-[state=active]:font-semibold transition-all duration-300"
               >
                 {label}
               </TabsTrigger>

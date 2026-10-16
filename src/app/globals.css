@@ -151,3 +151,18 @@
   );
   z-index: 0;
 }
+
+/* Loading state (src/app/loading.tsx) */
+@keyframes astra-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes astra-loading-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

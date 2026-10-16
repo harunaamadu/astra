@@ -5,13 +5,13 @@ import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { subNavLinks, utilityLinks } from "@/lib/constants/navigation";
-import { useDepartments } from "@/components/providers/departments-provider";
+import type { Department, NavLink } from "@/types";
 import { useUIStore } from "@/store/ui-store";
 import { Logo } from "./logo";
 
-export function MobileNav() {
-  const departments = useDepartments();
+type Props = { departments: Department[]; subNavLinks: NavLink[]; utilityLinks: NavLink[] };
+
+export function MobileNav({ departments, subNavLinks, utilityLinks }: Props) {
   const open = useUIStore((s) => s.mobileNavOpen);
   const setOpen = useUIStore((s) => s.setMobileNavOpen);
   const close = () => setOpen(false);
@@ -19,7 +19,7 @@ export function MobileNav() {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="size-11 hidden" aria-label="Open menu">
+        <Button variant="ghost" size="icon" className="size-11 lg:hidden" aria-label="Open menu">
           <Menu className="size-5" aria-hidden />
         </Button>
       </SheetTrigger>
@@ -32,7 +32,7 @@ export function MobileNav() {
           {departments.map((d) => (
             <AccordionItem key={d.id} value={d.id}>
               <AccordionTrigger className="text-sm">{d.label}</AccordionTrigger>
-              <AccordionContent className="[&_a]:no-underline">
+              <AccordionContent>
                 <ul className="space-y-2 pl-1">
                   <li>
                     <Link href={d.href} onClick={close} className="text-sm font-medium">

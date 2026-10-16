@@ -3,29 +3,21 @@
 import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
 import { visionTool } from "@sanity/vision";
-import { apiVersion, dataset, projectId } from "./sanity/env";
-import { schemaTypes, singletonTypes } from "./sanity/schemaTypes";
-import { structure } from "./sanity/structure";
-
-const singletons = singletonTypes as readonly string[];
+import { apiVersion, dataset, projectId } from "./src/sanity/env";
+import { schemaTypes } from "./src/sanity/schemaTypes";
+import { structure } from "./src/sanity/structure";
 
 export default defineConfig({
   name: "astra",
   title: "Astra",
   basePath: "/studio",
-  // The placeholder keeps the studio importable before the project exists. Set the real id in .env.local.
-  projectId: projectId || "missing-project-id",
+  projectId,
   dataset,
-  schema: {
-    types: schemaTypes,
-    templates: (templates) => templates.filter(({ schemaType }) => !singletons.includes(schemaType)),
-  },
-  document: {
-    // Singletons can be edited and published but not duplicated or deleted.
-    actions: (input, { schemaType }) =>
-      singletons.includes(schemaType)
-        ? input.filter(({ action }) => action && ["publish", "discardChanges", "restore"].includes(action))
-        : input,
-  },
   plugins: [structureTool({ structure }), visionTool({ defaultApiVersion: apiVersion })],
+  schema: { types: schemaTypes },
+  document: {
+    // Site settings is a single fixed document, so it can't be created again.
+    newDocumentOptions: (prev, { creationContext }) =>
+      creationContext.type === "global" ? prev.filter((item) => item.templateId !== "siteSettings") : prev,
+  },
 });

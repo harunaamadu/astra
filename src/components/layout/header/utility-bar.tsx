@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { ChevronDown, MapPin } from "lucide-react";
-import { utilityLinks } from "@/lib/constants/navigation";
+import type { NavLink } from "@/types";
 
-export function UtilityBar() {
+export function UtilityBar({ links: utilityLinks }: { links: NavLink[] }) {
   return (
     <div className="hidden border-b bg-secondary/60 text-xs text-muted-foreground md:block">
       <div className="mx-auto flex h-8 max-w-7xl items-center justify-between px-4">

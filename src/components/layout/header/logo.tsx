@@ -13,7 +13,7 @@ export function Logo({ className }: { className?: string }) {
           <feSpecularLighting
             result="specOut"
             specularExponent={20}
-            lighting-color="#bbbbbb"
+            lightingColor="#bbbbbb"
           >
             <fePointLight x={50} y={75} z={200} />
           </feSpecularLighting>

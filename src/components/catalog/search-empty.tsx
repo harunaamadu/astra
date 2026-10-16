@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { SearchX } from "lucide-react";
-import { popularSearches } from "@/lib/constants/navigation";
+import { getNavigation } from "@/lib/data/navigation";
 
-export function SearchEmpty({ q }: { q?: string }) {
+export async function SearchEmpty({ q }: { q?: string }) {
+  const { popularSearches } = await getNavigation();
   return (
     <div className="flex flex-col items-center rounded-2xl border border-dashed px-6 py-16 text-center">
       <span className="grid size-14 place-items-center rounded-full bg-secondary">

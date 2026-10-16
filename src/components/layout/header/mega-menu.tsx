@@ -5,11 +5,10 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronRight, LayoutGrid } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useDepartments } from "@/components/providers/departments-provider";
+import type { Department } from "@/types";
 import { cn } from "@/lib/utils";
 
-export function MegaMenu() {
-  const departments = useDepartments();
+export function MegaMenu({ departments }: { departments: Department[] }) {
   const [open, setOpen] = useState(false);
   const [activeId, setActiveId] = useState(departments[0].id);
   const rootRef = useRef<HTMLDivElement>(null);

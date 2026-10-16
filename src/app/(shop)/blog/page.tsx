@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageShell } from "@/components/content/page-shell";
-import { getBlogPosts } from "@/lib/cms/pages";
+import { getBlogPosts } from "@/lib/data/content";
 
 export const metadata: Metadata = {
   title: "Blog",

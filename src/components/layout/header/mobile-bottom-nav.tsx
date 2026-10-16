@@ -23,6 +23,7 @@ import { useUIStore } from "@/store/ui-store";
 import { useCartStore, selectCount } from "@/store/cart-store";
 import { useMounted } from "@/hooks/use-mounted";
 import { cn } from "@/lib/utils";
+import type { Department } from "@/types";
 
 const SEARCH_PANEL_ID = "mobile-search";
 
@@ -42,16 +43,12 @@ export function MobileSearchToggle() {
       aria-label={open ? "Close search" : "Open search"}
       onClick={() => setOpen(!open)}
     >
-      {open ? (
-        <X className="size-5" aria-hidden />
-      ) : (
-        <Search className="size-5" aria-hidden />
-      )}
+      {open ? <X className="size-5" aria-hidden /> : <Search className="size-5" aria-hidden />}
     </Button>
   );
 }
 
-export function MobileSearchPanel() {
+export function MobileSearchPanel({ departments, popularSearches }: { departments: Department[]; popularSearches: string[] }) {
   const open = useUIStore((s) => s.searchOpen);
   const setOpen = useUIStore((s) => s.setSearchOpen);
   const pathname = usePathname();
@@ -65,10 +62,7 @@ export function MobileSearchPanel() {
   // Focus the input on open; close on Escape.
   useEffect(() => {
     if (!open) return;
-    const t = setTimeout(
-      () => ref.current?.querySelector("input")?.focus(),
-      60,
-    );
+    const t = setTimeout(() => ref.current?.querySelector("input")?.focus(), 60);
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
     document.addEventListener("keydown", onKey);
     return () => {
@@ -89,7 +83,7 @@ export function MobileSearchPanel() {
           transition={{ duration: 0.15 }}
           className="absolute inset-x-0 top-full border-b bg-background px-4 py-3 shadow-md md:hidden"
         >
-          <SearchBar />
+          <SearchBar departments={departments} popularSearches={popularSearches} />
         </motion.div>
       )}
     </AnimatePresence>
@@ -122,31 +116,19 @@ export function MobileBottomNav() {
   const shownCount = mounted ? cartCount : 0;
 
   const onHome = pathname === "/";
-  const onAccount =
-    pathname.startsWith("/account") || pathname.startsWith("/sign-in");
+  const onAccount = pathname.startsWith("/account") || pathname.startsWith("/sign-in");
   // Only one tab is highlighted: an open search panel takes priority over the route.
-  const active = searchOpen
-    ? "search"
-    : onHome
-      ? "home"
-      : onAccount
-        ? "account"
-        : null;
+  const active = searchOpen ? "search" : onHome ? "home" : onAccount ? "account" : null;
 
-  const tone = (key: string) =>
-    active === key ? "text-foreground" : "text-muted-foreground";
+  const tone = (key: string) => (active === key ? "text-foreground" : "text-muted-foreground");
 
   return (
     <nav
       aria-label="Primary"
-      className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur supports-backdrop-filter:bg-background/85 md:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur supports-[backdrop-filter]:bg-background/85 md:hidden"
     >
       <div className="mx-auto flex max-w-md">
-        <Link
-          href="/"
-          aria-current={onHome ? "page" : undefined}
-          className={cn(itemClass, tone("home"))}
-        >
+        <Link href="/" aria-current={onHome ? "page" : undefined} className={cn(itemClass, tone("home"))}>
           {active === "home" && <Pill />}
           <Home className="size-5" aria-hidden />
           Home

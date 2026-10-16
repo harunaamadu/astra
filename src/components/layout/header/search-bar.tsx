@@ -5,14 +5,14 @@ import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { popularSearches } from "@/lib/constants/navigation";
-import { useDepartments } from "@/components/providers/departments-provider";
+import type { Department } from "@/types";
 import { searchSchema } from "@/lib/validations/search";
 import { useDebounce } from "@/hooks/use-debounce";
 
-export function SearchBar() {
+type Props = { departments: Department[]; popularSearches: string[] };
+
+export function SearchBar({ departments, popularSearches }: Props) {
   const router = useRouter();
-  const departments = useDepartments();
   const inputRef = useRef<HTMLInputElement>(null);
   const [q, setQ] = useState("");
   const [category, setCategory] = useState("all");
@@ -24,7 +24,7 @@ export function SearchBar() {
     const term = debounced.trim().toLowerCase();
     if (!term) return popularSearches.slice(0, 5);
     return popularSearches.filter((s) => s.includes(term)).slice(0, 5);
-  }, [debounced]);
+  }, [debounced, popularSearches]);
 
   function submit(value = q) {
     const parsed = searchSchema.safeParse({ q: value, category });

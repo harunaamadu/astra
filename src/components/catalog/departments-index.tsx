@@ -1,9 +1,8 @@
 import Link from "next/link";
-import { getDepartments } from "@/lib/cms/departments";
+import type { Department } from "@/types";
 
 /** Shown at /c. Every department with its subcategories. */
-export async function DepartmentsIndex() {
-  const departments = await getDepartments();
+export function DepartmentsIndex({ departments }: { departments: Department[] }) {
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 md:py-10">
       <h1 className="text-2xl font-semibold md:text-3xl">All departments</h1>

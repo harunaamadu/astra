@@ -1,20 +1,19 @@
-import { getDepartments } from "@/lib/cms/departments";
+import { getNavigation } from "@/lib/data/navigation";
 import type { Department } from "@/types";
 import type { Category } from "@/types/catalog";
 
 /**
- * Derived from the department tree (Sanity, with static fallback) so the mega menu and category
- * pages never disagree. Only links under /c/ become categories.
+ * Built from the navigation tree (Sanity categories, or the built-in defaults),
+ * so the mega menu, category pages and sitemap can never disagree.
  */
 const toPath = (href: string) => href.replace(/^\/c\//, "");
-const isCategoryHref = (href: string) => href.startsWith("/c/") && href.length > 3;
 
 function buildIndex(departments: Department[]): Map<string, Category> {
   const index = new Map<string, Category>();
   for (const d of departments) {
-    const links = d.groups.flatMap((g) => g.links).filter((l) => isCategoryHref(l.href));
-    if (!isCategoryHref(d.href)) continue;
-    index.set(toPath(d.href), { path: toPath(d.href), label: d.label, trail: [], children: links, isLeaf: false });
+    const path = toPath(d.href);
+    const links = d.groups.flatMap((g) => g.links);
+    index.set(path, { path, label: d.label, trail: [], children: links, isLeaf: false });
     for (const l of links) {
       index.set(toPath(l.href), {
         path: toPath(l.href),
@@ -28,15 +27,18 @@ function buildIndex(departments: Department[]): Map<string, Category> {
   return index;
 }
 
+async function index() {
+  return buildIndex((await getNavigation()).departments);
+}
+
 export async function getCategory(path: string): Promise<Category | null> {
-  return buildIndex(await getDepartments()).get(path) ?? null;
+  return (await index()).get(path) ?? null;
 }
 
 export async function getAllCategoryPaths(): Promise<string[]> {
-  return [...buildIndex(await getDepartments()).keys()];
+  return [...(await index()).keys()];
 }
 
-/** path -> label, for code that needs many lookups (search scoring) without awaiting per product. */
 export async function getCategoryLabels(): Promise<Map<string, string>> {
-  return new Map([...buildIndex(await getDepartments())].map(([path, c]) => [path, c.label]));
+  return new Map([...(await index())].map(([path, c]) => [path, c.label]));
 }

@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ContentSections } from "@/components/content/content-sections";
 import { PageShell } from "@/components/content/page-shell";
-import { getBlogPost, getBlogPosts } from "@/lib/cms/pages";
+import { getBlogPost, getBlogPosts } from "@/lib/data/content";
 
 type Props = { params: Promise<{ slug: string }> };
 
